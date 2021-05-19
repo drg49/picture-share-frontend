@@ -21,7 +21,7 @@ const Form = (props) => {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="Location Name"
+            placeholder="Name"
           />
           <input
             type="text"
