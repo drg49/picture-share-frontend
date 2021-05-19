@@ -28,7 +28,7 @@ function App() {
       },
       body: JSON.stringify(newPost)
     })
-    .then(() => getPosts)
+    .then(() => getPosts())
   }
 
   const handleUpdate = (post) => {
