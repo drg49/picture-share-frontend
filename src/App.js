@@ -6,7 +6,7 @@ import Form from "./Form"
 
 function App() {
 
-  const url = "http://localhost:4000"
+  const url = "https://picture-share-backend.herokuapp.com"
 
   const [posts, setPosts] = useState([])
 
