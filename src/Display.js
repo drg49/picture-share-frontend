@@ -6,7 +6,7 @@ const Display = (props) => {
     
     const loaded = () => {
         return <div>
-            {posts.map((post) => {
+            {props.postsToRender.map((post) => {
                 return (
                     <article key={post._id}>
                         <img src={post.img} alt={`${post.name} post`}/>
@@ -20,6 +20,7 @@ const Display = (props) => {
                     </article>
                 )
             })}
+            <button onClick={props.handleShowMorePosts}>Load more</button>
         </div>
     }
 
@@ -32,7 +33,7 @@ const Display = (props) => {
         )
     }
 
-    return posts.length > 0 ? loaded() : loading()
+    return props.postsToRender.length > 0 ? loaded() : loading()
 
 }
 

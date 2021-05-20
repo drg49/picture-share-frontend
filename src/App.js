@@ -4,21 +4,40 @@ import { Route, Link, Switch } from "react-router-dom";
 import Display from './Display'
 import Form from "./Form"
 
+const postsPerPage = 3;
+let arrayForHoldingPosts = [];
+
+
 function App() {
+  const [postsToShow, setPostsToShow] = useState([]);
+  const [next, setNext] = useState(3);
 
   const url = "https://picture-share-backend.herokuapp.com"
+  
 
-  const [posts, setPosts] = useState([])
+  const loopWithSlice = (start, end, val) => {
+    const slicedPosts = val.slice(start, end)
+    arrayForHoldingPosts = [...arrayForHoldingPosts, ...slicedPosts];
+    setPostsToShow(arrayForHoldingPosts);
+  };
 
-  const getPosts = () => {
+  const getPosts = (a, b) => {
     fetch(url + "/posts/")
     .then((response) => response.json())
     .then((data) => {
-      setPosts(data)
+      loopWithSlice(a, b, data.reverse()) //This shows that the newest posts show at the top
     })
   }
 
-  useEffect(() => {getPosts()}, [])
+  useEffect(() => {
+    getPosts(0, postsPerPage)
+  }, [])
+
+  const handleShowMorePosts = () => {
+    getPosts(next, next + postsPerPage);
+    setNext(next + postsPerPage);
+  };
+  
 
   const handleCreate = (newPost) => {
     fetch(url + "/posts/", {
@@ -28,7 +47,8 @@ function App() {
       },
       body: JSON.stringify(newPost)
     })
-    .then(() => getPosts())
+    .then(() => getPosts(next, next + postsPerPage))
+    .then(() => window.location.reload())
   }
 
   const handleUpdate = (post) => {
@@ -39,7 +59,8 @@ function App() {
       },
       body: JSON.stringify(post)
     })
-    .then(() => getPosts())
+    .then(() => getPosts(next, next + postsPerPage))
+    .then(() => window.location.reload())
   }
 
   const deletePost = (post) => {
@@ -47,8 +68,9 @@ function App() {
       method: "DELETE"
     })
     .then(() => {
-      getPosts()
+      getPosts(next, next + postsPerPage)
     })
+    .then(() => window.location.reload())
   }
 
   const emptyPost = {
@@ -73,12 +95,14 @@ function App() {
       <main>
         <Switch>
           <Route exact path="/" render={(rp) =>
-            <Display {...rp} posts={posts} selectPost={selectPost} deletePost={deletePost} />} />
+            <Display {...rp} postsToRender={postsToShow} selectPost={selectPost} deletePost={deletePost} handleShowMorePosts={handleShowMorePosts}/>} />
+            
           <Route exact path="/create" render={(rp) =>
             <Form {...rp} label="Create" post={emptyPost} handleSubmit={handleCreate} />} />
           <Route exact path="/edit" render={(rp) => 
               <Form {...rp} label="Update" post={selectedPost} handleSubmit={handleUpdate} />} />
         </Switch>
+      
       </main>
     </div>
   );
